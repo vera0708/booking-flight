@@ -1,4 +1,5 @@
 import getFormPerson from "./modules/formPerson.js";
+import readyPlane from "./modules/readyPlane.js";
 import start from "./modules/start.js";
 
 const init = (selectorApp, title) => {
@@ -11,6 +12,8 @@ const init = (selectorApp, title) => {
         const forms = getFormPerson(firstForm.count.value);
         firstForm.remove();
         main.append(...forms);
+
+        readyPlane(forms, main)
     })
 }
 init('.app', 'Выберите тур');
