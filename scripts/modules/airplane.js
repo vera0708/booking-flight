@@ -1,4 +1,5 @@
 import createElement from "./createElement.js";
+import declOfNum from "./declOfNum.js";
 
 const createCockpit = (titleText) => {
     const cockpit = createElement('div', {
@@ -60,27 +61,8 @@ const createBlockSeat = (n, count) => {
     return fuselage;
 };
 
-/*<li>
-  <ol class="seats">
-    <li class="seat">
-        <label>
-            <input name="seat" type="checkbox" value="2A">
-        </label>
-    </li>
-    <li class="seat">
-        <label>
-            <input name="seat" type="checkbox" value="2B">
-        </label>
-    </li>
-    <li class="seat"><label><input name="seat" type="checkbox" value="2C"></label></li>
-    <li class="seat"><label><input name="seat" type="checkbox" value="2D"></label></li>
-    <li class="seat"><label><input name="seat" type="checkbox" value="2E"></label></li>
-    <li class="seat"><label><input name="seat" type="checkbox" value="2F"></label></li>
-  </ol>
-</li>
-*/
-
-const createAirPlane = (title, scheme) => {
+const createAirPlane = (title, tourData) => {
+    const scheme = tourData.scheme;
     const choisesSeat = createElement('form', {
         className: 'choises-seat',
     });
@@ -88,10 +70,10 @@ const createAirPlane = (title, scheme) => {
         className: 'plane',
         name: 'plane',
     });
+
     const cockpit = createCockpit(title);
 
     let n = 1;
-
     const elements = scheme.map((type) => {
         if (type === 'exit') {
             return createExit();
@@ -100,7 +82,6 @@ const createAirPlane = (title, scheme) => {
         if (typeof type === 'number') {
             const blockSeat = createBlockSeat(n, type);
             n = n + type;
-
             return blockSeat;
         }
     });
@@ -111,33 +92,39 @@ const createAirPlane = (title, scheme) => {
     return choisesSeat;
 };
 
-/*
-<form class="">
-        <fieldset class="" name="">
-          <div class="exit fuselage"></div>
+const checkSeat = (form, data) => {
+    form.addEventListener('change', () => {
+        const formData = new FormData(form);
+        const checked = [...formData].map(([, value]) => value);
+        if (checked.length === data.length) {
+            [...form].forEach(item => {
+                if (item.checked === false && item.name === 'seat') {
+                    item.disabled = true;
+                }
+            });
+        }
+    });
+    form.addEventListener('submit', (eve) => {
+        eve.preventDefault();
+        const formData = new FormData(form);
+        const booked = [...formData].map(([, value]) => value);
+        for (let i = 0; i < data.length; i++) {
+            data[i].seat = booked[i];
+            console.log(data);
+        }
+    })
+};
 
-          <ol class="fuselage">
-            <li>
-              <ol class="seats">
-                <li class="seat">
-                  <label>
-                    <input name="seat" type="checkbox" value="1A">
-                  </label>
-                </li>
+const airplane = (main, data, tourData) => {
+    const title = `Выберите ${declOfNum(data.length, ['место', 'места', 'мест'])} `;
 
-                <li class="seat"><label><input name="seat" type="checkbox" value="1B"></label></li>
-                <li class="seat"><label><input name="seat" type="checkbox" value="1C"></label></li>
-                <li class="seat"><label><input name="seat" type="checkbox" value="1D"></label></li>
-                <li class="seat"><label><input name="seat" type="checkbox" value="1E"></label></li>
-                <li class="seat"><label><input name="seat" type="checkbox" value="1F"></label></li>
-              </ol>
-            </li>
-*/
+    const choiceForm = createAirPlane(title, tourData);
 
-const airplane = (main, data) => {
-    const title = 'Выберите места';
-    const scheme = ['exit', 11, 'exit', 1, 'exit', 17, 'exit'];
-    main.append(createAirPlane(title, scheme));
+    checkSeat(choiceForm, data);
+
+    /* const scheme = ['exit', 11, 'exit', 1, 'exit', 17, 'exit'];
+     main.append(createAirPlane(title, scheme));*/
+    main.append(choiceForm);
 };
 
 export default airplane;
