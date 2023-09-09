@@ -12,8 +12,10 @@ const createCockpit = (titleText) => {
     });
     const button = createElement('button', {
         className: 'cockpit-confirm',
+        name: 'send',
         type: 'submit',
         textContent: 'Подтвердить',
+        disabled: true,
     });
     cockpit.append(title, button);
     return cockpit;
@@ -68,7 +70,6 @@ const createAirPlane = (title, tourData) => {
     const scheme = tourData.scheme;
 
     const bookingSeat = getStorage(tourData.id).map(item => item.seat);
-    console.log('bookingSeat', bookingSeat)
 
     const choisesSeat = createElement('form', {
         className: 'choises-seat',
@@ -104,6 +105,8 @@ const checkSeat = (form, data, id) => {
     form.addEventListener('change', () => {
         const formData = new FormData(form);
         const checked = [...formData].map(([, value]) => value);
+        form.send.disabled = checked.length !== data.length;
+
         if (checked.length === data.length) {
             [...form].forEach(item => {
                 if (item.checked === false && item.name === 'seat') {
@@ -112,7 +115,7 @@ const checkSeat = (form, data, id) => {
             });
         } else {
             [...form].forEach(item => {
-                if (!bookingSeat.includes(item.value)) {
+                if (!bookingSeat.includes(item.value) && item.name === 'seat') {
                     item.disabled = false;
                 }
             })

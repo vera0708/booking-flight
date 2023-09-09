@@ -11,7 +11,6 @@ const init = async (selectorApp, title) => {
         eve.preventDefault();
 
         const tourData = data.find(tour => tour.id === firstForm.tour.value);
-        console.log('tourData: ', tourData);
         h1.textContent = tourData.tour;
         const forms = getFormPerson(firstForm.count.value);
         firstForm.remove();
